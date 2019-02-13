@@ -102,7 +102,7 @@ struct AlloApp : App
   Texture texture;
 
   // simulation parameters
-  double timeStep = 0.001;
+  double timeStep = 0.01;
   double dragFactor = 0.05;
 
   Mesh pointMesh;         // holds positions
@@ -113,14 +113,14 @@ struct AlloApp : App
   {
     // use a texture to control the alpha channel of each particle
     //
-    texture.create2D(256, 256, Texture::R8, Texture::RED, Texture::SHORT);
+    texture.create2D(256, 26, Texture::R8, Texture::RED, Texture::SHORT);
     int Nx = texture.width();
     int Ny = texture.height();
     std::vector<short> alpha;
     alpha.resize(Nx * Ny);
     for (int j = 0; j < Ny; ++j)
     {
-      float y = float(j) / (Ny - 1) * 2 - 1;
+      float y = float(j) / (Ny - 2) * 2 - 1;
       for (int i = 0; i < Nx; ++i)
       {
         float x = float(i) / (Nx - 1) * 2 - 1;
