@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Allo\MAT201B-2019\MAT201B-yujnkm\Assignments\build\particles-p0\Release\CMakeFiles\f1bd1262d66fdcc17f2ac204b91c831b\particles-p0_run.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Allo\MAT201B-2019\allolib\cmake\single_file\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Allo\MAT201B-2019\MAT201B-yujnkm\Assignments\build\particles-p0\Release\CMakeFiles\particles-p0_run" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{702EC0E2-91F5-37F7-83C2-82F86F12EB0C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

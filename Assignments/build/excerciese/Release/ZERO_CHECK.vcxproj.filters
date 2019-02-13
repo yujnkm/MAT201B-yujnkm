@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Allo\MAT201B-2019\MAT201B-yujnkm\Assignments\build\excerciese\Release\CMakeFiles\a459beb1218582f8e7bcc7ca87c52f55\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{BF22399A-6034-3EFE-A76A-2DA55C014B13}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
