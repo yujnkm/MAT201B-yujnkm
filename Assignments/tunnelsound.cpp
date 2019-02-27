@@ -12,7 +12,7 @@ struct MyApp : public App
   public:
     Mesh shapes;
 
-    int proximity;
+    int proximity = 10;
 
     void onMessage(osc::Message &m) override
     {
@@ -29,7 +29,7 @@ struct MyApp : public App
         g.draw(shapes);
     }
 
-    gam::SamplePlayer<float, gam::ipl::Linear, gam::phsInc::Loop> samplePlayer;
+    gam::SamplePlayer<float, gam::ipl::Linear, gam::phsInc::Loop> samplePlayer[10];
 
     void onCreate() override
     {
@@ -58,11 +58,11 @@ struct MyApp : public App
 
         nav().pos(0, 0, 24);
 
-        samplePlayer.load("../01.wav");
-        samplePlayer.load("../02.wav");
+        samplePlayer[0].load("../01.wav");
+        samplePlayer[1].load("../02.wav");
+        samplePlayer[2].load("../03.wav");
+        samplePlayer[3].load("../04.wav");
         //
-
-        samplePlayer.loop();
         Sync::master().spu(audioIO().fps());
     }
 
@@ -70,7 +70,10 @@ struct MyApp : public App
     {
         while (io())
         {
-            float f = samplePlayer();
+            float f = 0;
+            for (int i = 0; i < 2; i++)
+                f += samplePlayer[i]();
+            f = f / 2;
             io.out(0) = f * (proximity / 255.0);
             io.out(1) = f * (1 - (proximity / 255.0));
         }
