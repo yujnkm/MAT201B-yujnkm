@@ -1,5 +1,7 @@
 **/bin/
 **/build/
+*.pkf
+
 # Prerequisites
 *.d
 
