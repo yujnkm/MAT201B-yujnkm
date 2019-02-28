@@ -3,6 +3,11 @@
 #include <vector>
 #include "Gamma/SamplePlayer.h"
 
+#ifdef BUILD_VR
+#include "module/openvr/al_VRApp.hpp"
+#define App VRApp
+#endif
+
 using namespace al;
 using namespace std;
 using namespace gam;
