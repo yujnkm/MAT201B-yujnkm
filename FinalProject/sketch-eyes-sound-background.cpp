@@ -1,6 +1,3 @@
-// use
-// - DynamicScene
-
 #include "al/core.hpp"
 #include "al/core/app/al_DistributedApp.hpp"
 #include "module/img/loadImage.hpp"
@@ -19,8 +16,6 @@ Vec3f r(float m = 1) {
   return Vec3f(rnd::uniformS(), rnd::uniformS(), rnd::uniformS()) * m;
 }
 
-vector<SoundPlayer> soundPlayer;
-
 struct Thing {
   Texture texture;
   Mesh mesh;
@@ -28,6 +23,7 @@ struct Thing {
 
 struct SimpleVoice : PositionedVoice {
   Parameter whichSound{"whichSound"};
+  SoundPlayer soundPlayer;
 
   SimpleVoice() {
     registerParameterAsField(whichSound);
@@ -37,7 +33,7 @@ struct SimpleVoice : PositionedVoice {
 
   virtual void onProcess(AudioIOData& io) override {
     while (io()) {
-      io.out(0) = soundPlayer[int(whichSound)]();
+      io.out(0) = soundPlayer();
     }
   }
 
@@ -46,6 +42,13 @@ struct SimpleVoice : PositionedVoice {
     thing->texture.bind();
     g.draw(thing->mesh);
     thing->texture.unbind();
+  }
+
+  virtual void onTriggerOn() override {
+    char fileName[100];
+    sprintf(fileName, "../asset/%02d.wav", int(whichSound));
+    cout << fileName << endl;
+    soundPlayer.load(fileName);
   }
 };
 
@@ -66,10 +69,10 @@ struct MyApp : DistributedApp<SharedState> {
 
     scene.registerSynthClass<SimpleVoice>();
     scene.setDefaultUserData(&thing);
-    scene.allocatePolyphony("SimpleVoice", soundPlayer.size());
+    scene.allocatePolyphony("SimpleVoice", 11);
     scene.prepare(audioIO());
 
-    for (float i = 0.1; i < soundPlayer.size(); ++i) {
+    for (float i = 0.1; i < 11; ++i) {
       auto* freeVoice = scene.getVoice<SimpleVoice>();
       auto params = std::vector<float>{i};
       freeVoice->setParamFields(params);
@@ -119,7 +122,6 @@ struct MyApp : DistributedApp<SharedState> {
   }
 
   virtual void onSound(AudioIOData& io) override {
-    Sync::master().spu(audioIO().fps());  // XXX put this somewhere else!
     scene.render(io);
     //
   }
@@ -127,13 +129,7 @@ struct MyApp : DistributedApp<SharedState> {
 
 int main() {
   MyApp app;
-  for (int i = 1; i < 11; ++i) {
-    soundPlayer.emplace_back();
-    char fileName[100];
-    sprintf(fileName, "../asset/%02d.wav", i);
-    cout << fileName << endl;
-    soundPlayer.back().load(fileName);
-  }
   app.initAudio();
+  Domain::master().spu(app.audioIO().framesPerSecond());
   app.start();
 }
