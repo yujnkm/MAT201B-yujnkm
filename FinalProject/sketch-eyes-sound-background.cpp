@@ -70,12 +70,12 @@ struct MyApp : DistributedApp<SharedState> {
     g.texture();
 
     // this is one way to do a background; texture a sphere and make it very big
-    g.pushBack();
+    g.pushMatrix();
     back.bind();
     g.scale(900);
     g.draw(b);
     back.unbind();
-    g.popBack();
+    g.popMatrix();
 
     t.bind();
     for (auto& p : eye) {
