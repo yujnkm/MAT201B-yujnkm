@@ -19,29 +19,72 @@ Vec3f r(float m = 1) {
   return Vec3f(rnd::uniformS(), rnd::uniformS(), rnd::uniformS()) * m;
 }
 
+vector<SoundPlayer> soundPlayer;
+
+struct Thing {
+  Texture texture;
+  Mesh mesh;
+};
+
+struct SimpleVoice : PositionedVoice {
+  Parameter whichSound{"whichSound"};
+
+  SimpleVoice() {
+    registerParameterAsField(whichSound);
+    //
+    pose().pos(r(5));
+  }
+
+  virtual void onProcess(AudioIOData& io) override {
+    while (io()) {
+      io.out(0) = soundPlayer[int(whichSound)]();
+    }
+  }
+
+  virtual void onProcess(Graphics& g) override {
+    Thing* thing = (Thing*)userData();
+    thing->texture.bind();
+    g.draw(thing->mesh);
+    thing->texture.unbind();
+  }
+};
+
 struct SharedState {
   Pose pose;
 };
 
 struct MyApp : DistributedApp<SharedState> {
-  vector<SoundPlayer> soundPlayer;
-  Texture t;
-  Mesh m;
-  vector<Vec3f> eye;
+  DynamicScene scene{8};
+
+  Thing thing;
 
   Texture back;
   Mesh b;
 
-  void onCreate() {
+  void onCreate() override {
+    scene.showWorldMarker(false);
+
+    scene.registerSynthClass<SimpleVoice>();
+    scene.setDefaultUserData(&thing);
+    scene.allocatePolyphony("SimpleVoice", soundPlayer.size());
+    scene.prepare(audioIO());
+
+    for (float i = 0.1; i < soundPlayer.size(); ++i) {
+      auto* freeVoice = scene.getVoice<SimpleVoice>();
+      auto params = std::vector<float>{i};
+      freeVoice->setParamFields(params);
+      scene.triggerOn(freeVoice);
+    }
+
     auto imageData = imgModule::loadImage("../asset/eye.jpg");
     if (imageData.data.size() == 0) {
       cout << "failed to load image" << endl;
     }
-    t.create2D(imageData.width, imageData.height);
-    t.submit(imageData.data.data(), GL_RGBA, GL_UNSIGNED_BYTE);
+    thing.texture.create2D(imageData.width, imageData.height);
+    thing.texture.submit(imageData.data.data(), GL_RGBA, GL_UNSIGNED_BYTE);
 
-    addSphereWithTexcoords(m);
-    m.generateNormals();
+    addSphereWithTexcoords(thing.mesh);
+    thing.mesh.generateNormals();
 
     {
       auto imageData = imgModule::loadImage("../asset/background.jpg");
@@ -55,16 +98,11 @@ struct MyApp : DistributedApp<SharedState> {
       b.generateNormals();
     }
 
-    for (int i = 0; i < 10; i++) {
-      eye.push_back(r(5));
-    }
-
     nav().pos(0, 0, 10);
     lens().far(1000);
-    cout << lens().far() << endl;
   }
 
-  void onDraw(Graphics& g) {
+  void onDraw(Graphics& g) override {
     g.clear(0.2);
     g.depthTesting(true);
     g.texture();
@@ -77,34 +115,24 @@ struct MyApp : DistributedApp<SharedState> {
     back.unbind();
     g.popMatrix();
 
-    t.bind();
-    for (auto& p : eye) {
-      g.pushMatrix();
-      g.translate(p);
-      g.draw(m);
-      g.popMatrix();
-    }
-    t.unbind();
+    scene.render(g);
   }
 
-  void onSound(AudioIOData& io) override {
+  virtual void onSound(AudioIOData& io) override {
     Sync::master().spu(audioIO().fps());  // XXX put this somewhere else!
-    while (io()) {
-      float f = soundPlayer[0]();
-      io.out(0) = f;
-      io.out(1) = f;
-    }
+    scene.render(io);
+    //
   }
 };
 
 int main() {
   MyApp app;
   for (int i = 1; i < 11; ++i) {
-    app.soundPlayer.emplace_back();
+    soundPlayer.emplace_back();
     char fileName[100];
     sprintf(fileName, "../asset/%02d.wav", i);
     cout << fileName << endl;
-    app.soundPlayer.back().load(fileName);
+    soundPlayer.back().load(fileName);
   }
   app.initAudio();
   app.start();
