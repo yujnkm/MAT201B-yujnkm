@@ -156,10 +156,14 @@ struct MyApp : DistributedApp<SharedState> {
   void simulate(double dt) override {
     // if (app.isPrimary()) {
     state().pose = nav();
+    cout << "simulate" << endl;
   }
 
   void onAnimate(double dt) override {
-    // pose() = state().pose;
+    if (hasRole(ROLE_RENDERER)) {
+      pose() = state().pose;
+    }
+    cout << "onAnimate" << endl;
     //
   }
 };
