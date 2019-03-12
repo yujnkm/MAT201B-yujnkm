@@ -70,7 +70,7 @@ struct SharedState {
 };
 
 struct MyApp : DistributedApp<SharedState> {
-  DynamicScene scene{8};
+  DistributedScene scene{PolySynth::TIME_MASTER_CPU};
 
   SphereTexture eyeball;
   SphereTexture backdrop;
@@ -84,6 +84,8 @@ struct MyApp : DistributedApp<SharedState> {
     scene.setDefaultUserData(&eyeball);
     scene.allocatePolyphony("EyeballChello", 11);
     scene.prepare(audioIO());
+
+    registerDynamicScene(scene);
 
     for (float i = 0.1; i < 11; ++i) {
       auto* freeVoice = scene.getVoice<EyeballChello>();
