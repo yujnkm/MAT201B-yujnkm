@@ -80,16 +80,19 @@ struct MyApp : DistributedApp<SharedState> {
 
     registerDynamicScene(scene);
 
-    for (float i = 0.1; i < 11; ++i) {
-      auto* freeVoice = scene.getVoice<EyeballChello>();
-      auto params = std::vector<float>{i};
-      freeVoice->setParamFields(params);
+    if (hasRole(ROLE_SIMULATOR) || hasRole(ROLE_DESKTOP)) {
+      for (float i = 0.1; i < 11; ++i) {
+        auto* freeVoice = scene.getVoice<EyeballChello>();
+        auto params = std::vector<float>{i};
+        freeVoice->setParamFields(params);
 
-      using rnd::uniformS;
-      freeVoice->pose().pos(Vec3f(uniformS(), uniformS(), uniformS()) * 5);
-      freeVoice->pose().quat(
-          Quatf(uniformS(), uniformS(), uniformS(), uniformS()).normalize());
-      scene.triggerOn(freeVoice);
+        scene.triggerOn(freeVoice);
+
+        using rnd::uniformS;
+        freeVoice->pose().pos(Vec3f(uniformS(), uniformS(), uniformS()) * 5);
+        freeVoice->pose().quat(
+            Quatf(uniformS(), uniformS(), uniformS(), uniformS()).normalize());
+      }
     }
 
     eyeball.load("../asset/eye.jpg");
