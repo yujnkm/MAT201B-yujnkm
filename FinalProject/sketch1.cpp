@@ -145,6 +145,7 @@ struct MyApp : DistributedApp<SharedState> {
 
     g.lighting(false);
     g.texture();
+    eyeball.draw(g);
     scene.render(g);
   }
 
