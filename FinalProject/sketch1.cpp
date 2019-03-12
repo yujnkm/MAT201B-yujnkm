@@ -38,14 +38,7 @@ struct EyeballChello : PositionedVoice {
   Parameter whichSound{"whichSound"};
   SoundPlayer soundPlayer;
 
-  EyeballChello() {
-    registerParameterAsField(whichSound);
-
-    using rnd::uniformS;
-    pose().pos(Vec3f(uniformS(), uniformS(), uniformS()) * 5);
-    pose().quat(
-        Quatf(uniformS(), uniformS(), uniformS(), uniformS()).normalize());
-  }
+  EyeballChello() { registerParameterAsField(whichSound); }
 
   virtual void onProcess(AudioIOData& io) override {
     while (io()) {
@@ -91,6 +84,11 @@ struct MyApp : DistributedApp<SharedState> {
       auto* freeVoice = scene.getVoice<EyeballChello>();
       auto params = std::vector<float>{i};
       freeVoice->setParamFields(params);
+
+      using rnd::uniformS;
+      freeVoice->pose().pos(Vec3f(uniformS(), uniformS(), uniformS()) * 5);
+      freeVoice->pose().quat(
+          Quatf(uniformS(), uniformS(), uniformS(), uniformS()).normalize());
       scene.triggerOn(freeVoice);
     }
 
