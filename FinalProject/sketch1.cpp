@@ -78,6 +78,9 @@ struct MyApp : DistributedApp<SharedState> {
     scene.allocatePolyphony("EyeballChello", 11);
     scene.prepare(audioIO());
 
+    eyeball.load("../asset/eye.jpg");
+    eyeball.mesh.scale(0.4);
+
     registerDynamicScene(scene);
 
     if (hasRole(ROLE_SIMULATOR) || hasRole(ROLE_DESKTOP)) {
@@ -86,17 +89,15 @@ struct MyApp : DistributedApp<SharedState> {
         auto params = std::vector<float>{i};
         freeVoice->setParamFields(params);
 
-        scene.triggerOn(freeVoice);
-
         using rnd::uniformS;
         freeVoice->pose().pos(Vec3f(uniformS(), uniformS(), uniformS()) * 5);
         freeVoice->pose().quat(
             Quatf(uniformS(), uniformS(), uniformS(), uniformS()).normalize());
+
+        scene.triggerOn(freeVoice);
       }
     }
 
-    eyeball.load("../asset/eye.jpg");
-    eyeball.mesh.scale(0.4);
     backdrop.load("../asset/background.jpg");
 
     Scene* scene = Scene::import("../asset/face.obj");
@@ -158,16 +159,14 @@ struct MyApp : DistributedApp<SharedState> {
   }
 
   void simulate(double dt) override {
-    // if (app.isPrimary()) {
     state().pose = nav();
-    cout << "simulate" << endl;
+    //
   }
 
   void onAnimate(double dt) override {
     if (hasRole(ROLE_RENDERER)) {
       pose() = state().pose;
     }
-    cout << "onAnimate" << endl;
     //
   }
 };
