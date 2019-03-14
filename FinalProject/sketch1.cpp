@@ -181,6 +181,7 @@ struct MyApp : DistributedApp<SharedState> {
 
 int main() {
   MyApp app;
+  app.displayMode(app.displayMode() | Window::STEREO_BUF);
   app.initAudio();
   Domain::master().spu(app.audioIO().framesPerSecond());
   app.start();
