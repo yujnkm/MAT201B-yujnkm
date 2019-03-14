@@ -118,13 +118,21 @@ struct MyApp : DistributedApp<SharedState> {
 
     // nav().pos(0, 0, 10);
     lens().far(1000);
+
+    if (hasRole(ROLE_RENDERER)) {
+      parameterServer().verbose();
+      load_perprojection_configuration();
+      cursorHide(true);
+      stereo(true);
+    }
   }
 
   void onDraw(Graphics& g) override {
     g.clear(0.2);
     g.depthTesting(true);
 
-    // this is one way to do a background; texture a sphere and make it very big
+    // this is one way to do a background; texture a sphere and make it very
+    // big
     g.pushMatrix();
     g.scale(900);
     g.texture();
