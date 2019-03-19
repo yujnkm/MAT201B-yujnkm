@@ -63,6 +63,18 @@ struct SharedState {
 };
 
 struct MyApp : DistributedApp<SharedState> {
+  MyApp() {
+    if (hasRole(ROLE_RENDERER)) {
+      displayMode(displayMode() | Window::STEREO_BUF);
+    }
+    if (hasRole(ROLE_DESKTOP)) {
+      initAudio();
+    } else {
+      initAudio(44100, 1024, 60, 60, 10);
+    }
+    Domain::master().spu(audioIO().framesPerSecond());
+  }
+
   DistributedScene scene{PolySynth::TIME_MASTER_CPU};
 
   SphereTexture eyeball;
@@ -181,8 +193,5 @@ struct MyApp : DistributedApp<SharedState> {
 
 int main() {
   MyApp app;
-  app.displayMode(app.displayMode() | Window::STEREO_BUF);
-  app.initAudio();
-  Domain::master().spu(app.audioIO().framesPerSecond());
   app.start();
 }
